@@ -21,9 +21,6 @@ import com.bumptech.glide.Glide;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-/**
- * Created by asus on 6/19/2017.
- */
 
 public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -62,6 +59,8 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
+
+
         // Get current position of item in recyclerview to bind data and assign values from list
         MyHolder myHolder= (MyHolder) holder;
         Story current = mstory.get(position);
@@ -69,7 +68,8 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         myHolder.id = current._id;
         myHolder.captionText.setText(current._caption);
         myHolder.descText = current._desc ;
-       //GET IMAGE FROM DB
+        myHolder.url=current._url;
+        //GET IMAGE FROM DB
         //myHolder.img.setImageBitmap(convertToBitmap(current.getImage()));
 
         // load image into imageview using glide from API (url)
@@ -92,6 +92,7 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         TextView captionText;
         ImageView img;
+        String url;
         String descText;
         Integer id;
 
@@ -109,7 +110,7 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onClick(View v) {
                     try {
 
-                        /*String s=descText.toString();
+                        //String s=descText.toString();
                         String t=captionText.getText().toString();
 
                         img.buildDrawingCache();
@@ -117,14 +118,21 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         ByteArrayOutputStream stream=new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
                         byte[] image=stream.toByteArray();
-                        String img_str = Base64.encodeToString(image, 0); */
+                        String img_str = Base64.encodeToString(image, 0);
 
-                        Integer currID=id;
+                       /* Integer currID=id;
                         //Log.d("ID","CURRENT :::"+currID);
                         Intent i=new Intent(context1,popup.class);
                         i.putExtra("CURRENT_ID",currID);
                         context1.startActivity(i);
-
+*/
+                       Intent i=new Intent(context1,popup.class);
+                        i.putExtra("title",descText);
+                        i.putExtra("caption",t);
+                        //         i.putExtra("img",img_str);
+                        Log.d("TAG",url);
+                        i.putExtra("imageUri", url);
+                        context1.startActivity(i);
                        // mAdapterCallback.onclickRecylcer(videoId);
                     } catch (ClassCastException exception) {
                         //Log.d("RecyclerView", "onClicked：" + getLayoutPosition()+videoId);
@@ -136,6 +144,8 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
     }
+
+
     //get bitmap image from byte array
 
     private Bitmap convertToBitmap(byte[] b) {

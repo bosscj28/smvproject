@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 public class popup extends Activity {
@@ -49,6 +51,13 @@ public class popup extends Activity {
         textView1.setTypeface(monstRegular);
         //img2 = (ImageView) findViewById(R.id.imageView7);
 
+
+        String s = getIntent().getStringExtra("title");
+        String t=  getIntent().getStringExtra("caption");
+        String i=  getIntent().getStringExtra("imageUri");
+        textView.setText(t);
+        textView1.setText(s);
+        Picasso.with(this).load(i).into(img);
         /*String s = getIntent().getStringExtra("title");
         String t=  getIntent().getStringExtra("caption");
         final String i=  getIntent().getStringExtra("img");
@@ -60,7 +69,7 @@ public class popup extends Activity {
         img.setImageBitmap(decodedByte);*/
 
         // GET IT FROM PREV INTENT
-        Integer ID = getIntent().getIntExtra("CURRENT_ID",1);
+  /*      Integer ID = getIntent().getIntExtra("CURRENT_ID",1);
         db = new DatabaseHandler(getApplicationContext());
         final ArrayList<Story> story = new ArrayList<>(db.getAllStoryByID(ID));
         textView.setText(story.get(0).getCaption());
@@ -69,6 +78,8 @@ public class popup extends Activity {
         Bitmap bp = convertToBitmap(pic);
         img.setImageBitmap(bp);
        Log.d("STORY","LIST"+ story.get(0).getID());
+
+    */
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

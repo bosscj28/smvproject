@@ -7,12 +7,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.LoginFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -29,10 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import static android.content.ContentValues.TAG;
 import static com.example.asus.story.R.id.list1;
 
 /**
@@ -88,12 +83,22 @@ public class CommonFragment extends Fragment {
         lv = (RecyclerView) v1.findViewById(list1);
         mlayoutmanager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL, false);
         lv.setLayoutManager(mlayoutmanager);
+        lv.setOnFlingListener(new RecyclerViewSwipeListener(true) {
+            @Override
+            public void onSwipeDown() {
 
+            }
+            @Override
+            public void onSwipeUp() {
+
+            }
+        });
 
         getData(message);
 
         return v1;
     }
+
 
     public void getData(String id)
     {
@@ -103,8 +108,8 @@ public class CommonFragment extends Fragment {
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("cat_id", id);
-        params.put("upper_limit", "0");
-        params.put("lower_limit", "10");
+        params.put("upper_limit","0");
+        params.put("lower_limit","2");
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,url, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -146,7 +151,7 @@ public class CommonFragment extends Fragment {
         });
 
         // Adding request to request queue
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+       RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(req);
     }
 }
