@@ -41,11 +41,13 @@ public class Story extends SugarRecord {
 
 package com.example.asus.story;
 
+import java.io.Serializable;
+
 /**
  * Created by asus on 6/19/2017.
  */
 
-public class Story {
+public class Story implements Serializable {
 
     //private variables
     int _id;

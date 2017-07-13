@@ -3,14 +3,10 @@ package com.example.asus.story;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -48,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     TextView maintext,uploadtext;
@@ -61,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private String TAG = MainActivity.class.getSimpleName();
     private ProgressDialog pDialog;
     RelativeLayout mainRL;
+    private ProgressDialog pd;
 
 
 
@@ -76,8 +74,7 @@ public class MainActivity extends AppCompatActivity
         categoryList = new ArrayList<>();
         if(isOnline(this))
         {
-            new GetCategory().execute();
-            //GetCategorys();
+            GetCategorys();
         }
         else
         {
@@ -108,7 +105,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         Typeface monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
-        maintext = (TextView) findViewById(R.id.textView5);
+        maintext = (TextView) findViewById(R.id.descDetail);
         uploadtext = (TextView) findViewById(R.id.likevw);
         maintext.setTypeface(monstRegular);
         uploadtext.setTypeface(monstRegular);
@@ -275,119 +272,10 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    /**
-     * Async task class to get json by making HTTP call
-     */
-    private class GetCategory extends AsyncTask<Void, Void, Void> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpHandler sh = new HttpHandler();
-
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url);
-
-            Log.e(TAG, "Response from url: " + jsonStr);
-
-            if (jsonStr != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-
-                    // Getting JSON Array node
-                    JSONArray contacts = jsonObj.getJSONArray("data");
-
-                    // looping through All Contacts
-                    for (int i = 0; i < contacts.length(); i++) {
-                        JSONObject c = contacts.getJSONObject(i);
-
-                        String id = c.getString("c_id");
-                        String name = c.getString("c_name");
-                        HashMap<String, String> cats = new HashMap<>();
-                        cats.put("id",id);
-                        cats.put("name",name);
-
-                        // adding contact to contact list
-                        categoryList.add(cats);
-                    }
-                } catch (final JSONException e) {
-                    Log.e(TAG, "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });
-
-                }
-            } else {
-                Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-
-            }
-
-
-            //GetCategorys();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-
-            viewPager = (ViewPager) findViewById(R.id.viewpagermain);
-            setupViewPager(viewPager);
-
-            tabLayout = (TabLayout) findViewById(R.id.tabs);
-            tabLayout.setupWithViewPager(viewPager);
-            changeTabsFont();
-            uploadtext.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    intent = new Intent(MainActivity.this, Main2Activity.class);
-                    intent.putExtra("CATEGORY",categoryList);
-                    startActivity(intent);
-                    //overridePendingTransition( R.anim.righttoleft, R.anim.stable );
-                    finish();
-
-
-                }
-            });
-
-            for (int i=0;i<categoryList.size();i++)
-            {
-                Log.d("CAT","DATA"+categoryList.get(i));
-            }
-        }
-
-    }
-/*
     public void GetCategorys()
     {
+        pd = ProgressDialog.show(this, "", "Please Wait!", true, false);
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,url,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -407,9 +295,30 @@ public class MainActivity extends AppCompatActivity
                                 HashMap<String, String> cats = new HashMap<>();
                                 cats.put("id",id);
                                 cats.put("name",name);
-                                //categoryList.add(cats);
+                                categoryList.add(cats);
 
                             }
+                                if (pd.isShowing())
+                                pd.dismiss();
+
+                            viewPager = (ViewPager) findViewById(R.id.viewpagermain);
+                            setupViewPager(viewPager);
+
+                            tabLayout = (TabLayout) findViewById(R.id.tabs);
+                            tabLayout.setupWithViewPager(viewPager);
+                            changeTabsFont();
+                            uploadtext.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    intent = new Intent(MainActivity.this, Main2Activity.class);
+                                    intent.putExtra("CATEGORY",categoryList);
+                                    startActivity(intent);
+                                    //overridePendingTransition( R.anim.righttoleft, R.anim.stable );
+                                    finish();
+
+
+                                }
+                            });
 
 
                         } catch (JSONException e) {
@@ -427,7 +336,7 @@ public class MainActivity extends AppCompatActivity
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
         requestQueue.add(req);
 
-    } */
+    }
 }
 
 

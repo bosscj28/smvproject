@@ -26,9 +26,8 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     Context context;
     ArrayList<Story> mstory;
-    private LayoutInflater inflater;
-    private AdapterCallback mAdapterCallback;
     Typeface monstRegular,monstBold;
+    private LayoutInflater inflater;
 
 
     public dataAdapter(Context context, ArrayList<Story> story) {
@@ -36,6 +35,10 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.context = context;
         inflater= LayoutInflater.from(context);
         this.mstory = story;
+        for(int i=0; i<story.size(); i++)
+        {
+            Log.d("ADAPTER STORY","DATA OF STORY "+story.get(i).getID());
+        }
     }
 
 
@@ -58,8 +61,6 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // Bind data
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-
 
         // Get current position of item in recyclerview to bind data and assign values from list
         MyHolder myHolder= (MyHolder) holder;
@@ -86,8 +87,6 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mstory.size();
     }
 
-
-
     class MyHolder extends RecyclerView.ViewHolder{
 
         TextView captionText;
@@ -112,7 +111,6 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                         //String s=descText.toString();
                         String t=captionText.getText().toString();
-
                         img.buildDrawingCache();
                         Bitmap bitmap = img.getDrawingCache();
                         ByteArrayOutputStream stream=new ByteArrayOutputStream();
@@ -125,17 +123,25 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         Intent i=new Intent(context1,popup.class);
                         i.putExtra("CURRENT_ID",currID);
                         context1.startActivity(i);
-*/
+                       */
+                       // POPUP CLASS
+                        /*
                        Intent i=new Intent(context1,popup.class);
                         i.putExtra("title",descText);
                         i.putExtra("caption",t);
-                        //         i.putExtra("img",img_str);
+                        //i.putExtra("img",img_str);
                         Log.d("TAG",url);
                         i.putExtra("imageUri", url);
+                        context1.startActivity(i);*/
+
+                        Intent i = new Intent(context1,DetailActivity.class);
+                        i.putExtra("STORY",mstory);
+                        i.putExtra("POSITION",getLayoutPosition());
                         context1.startActivity(i);
-                       // mAdapterCallback.onclickRecylcer(videoId);
+
+
                     } catch (ClassCastException exception) {
-                        //Log.d("RecyclerView", "onClicked：" + getLayoutPosition()+videoId);
+
                     }
                 }
             });
@@ -153,8 +159,5 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return BitmapFactory.decodeByteArray(b, 0, b.length);
     }
 
-    public static interface AdapterCallback {
-        void onclickRecylcer(String VD);
-    }
 }
 

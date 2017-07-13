@@ -2,6 +2,8 @@ package com.example.asus.story;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,6 +23,9 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,18 +34,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.example.asus.story.R.id.list1;
-
-/**
- * Created by asus on 6/29/2017.
- */
+import static com.example.asus.story.R.id.swipyrefreshlayout;
 
 public class CommonFragment extends Fragment {
 
     private ProgressDialog pDialog;
     private dataAdapter data;
     private RecyclerView lv;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private SwipyRefreshLayout swipeRefreshLayout;
     private RecyclerView.LayoutManager mlayoutmanager;
+    String upper,lower;
+    int up,initLow;
+
+    String message;
 
     public CommonFragment(){
 
@@ -74,33 +80,106 @@ public class CommonFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View v1 =inflater.inflate(R.layout.fragment_common, container, false);
-
-        String message = getArguments().getString(EXTRA_MESSAGE);
-        Log.d("MESSAGE","ALLSTORY"+ message);
-       // TextView TV = (TextView) v1.findViewById(R.id.textView2);
-        //TV.setText(message);
+        // Intial PARAMS
+        message = getArguments().getString(EXTRA_MESSAGE);
+        upper = "0";
+        lower = "5";
+        initLow = Integer.parseInt(lower);
 
         lv = (RecyclerView) v1.findViewById(list1);
         mlayoutmanager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL, false);
         lv.setLayoutManager(mlayoutmanager);
-        lv.setOnFlingListener(new RecyclerViewSwipeListener(true) {
-            @Override
-            public void onSwipeDown() {
+        getData(message,upper,lower);
+        swipeRefreshLayout = (SwipyRefreshLayout) v1.findViewById(swipyrefreshlayout);
+        swipeRefreshLayout.setColorSchemeColors(R.color.colorAccent);
+        //ON CREATE FRAGMENT CALL DATA
+        swipeRefreshLayout.setRefreshing(true);
+        if(isOnline(context))
+        {
+            getData(message,upper,lower);
+            swipeRefreshLayout.setRefreshing(false);
+        }
+        else
+        {
+            swipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(context, "Internet is not Connected", Toast.LENGTH_LONG).show();
+        }
 
-            }
-            @Override
-            public void onSwipeUp() {
 
+
+        swipeRefreshLayout.setDistanceToTriggerSync(30);
+        swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh(SwipyRefreshLayoutDirection direction) {
+                if(direction == SwipyRefreshLayoutDirection.TOP)
+                {
+                    if(upper.equals("0"))
+                    {
+                        if(isOnline(context))
+                        {
+                            getData(message,upper,lower);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                        else
+                        {
+                            swipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(context, "Internet is not Connected", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    else {
+                        if(isOnline(context))
+                        {
+                            up = Integer.parseInt(upper);
+                            up = up - initLow;
+                            upper = String.valueOf(up);
+                            Log.d("MESS" + message, "UPP" + upper);
+                            Log.d("LOWER", "Low" + lower);
+                            getData(message,upper,lower);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                        else
+                        {
+                            swipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(context, "Internet is not Connected", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+
+                }
+                if(direction == SwipyRefreshLayoutDirection.BOTTOM)
+                {
+                    if(isOnline(context))
+                    {
+                        up = Integer.parseInt(upper);
+                        up = up + initLow;
+                        upper = String.valueOf(up);
+                        Log.d("MESS" + message, "UPP" + upper);
+                        Log.d("LOWER", "Low" + lower);
+                        getData(message,upper,lower);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                    else
+                    {
+                        swipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(context, "Internet is not Connected", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
-
-        getData(message);
 
         return v1;
     }
 
-
-    public void getData(String id)
+    private boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+    public void getData(String id,String upperparam, String lowerparam)
     {
         // Tag used to cancel the request
 
@@ -108,8 +187,8 @@ public class CommonFragment extends Fragment {
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("cat_id", id);
-        params.put("upper_limit","0");
-        params.put("lower_limit","2");
+        params.put("upper_limit",upperparam);
+        params.put("lower_limit",lowerparam);
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,url, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -139,6 +218,8 @@ public class CommonFragment extends Fragment {
 
                             data=new dataAdapter(context, story);
                             lv.setAdapter(data);
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -150,7 +231,6 @@ public class CommonFragment extends Fragment {
             }
         });
 
-        // Adding request to request queue
        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(req);
     }

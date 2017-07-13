@@ -48,7 +48,7 @@ public class Main2Activity extends AppCompatActivity {
         Log.d("CATEGORY LIST","SIZE"+catlist.size());
         monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
         monstBold = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Bold.ttf");
-        maintext = (TextView) findViewById(R.id.textView5);
+        maintext = (TextView) findViewById(R.id.descDetail);
         uploadtext = (TextView) findViewById(R.id.likevw);
         newsfeed = (TextView) findViewById(R.id.nwsfd);
 
