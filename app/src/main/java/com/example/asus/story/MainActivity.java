@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -28,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.lefttoright, R.anim.hold);
         setContentView(R.layout.activity_main);
         //CATEGORY AS ARRAYLIST
         mainRL = (RelativeLayout) findViewById(R.id.MainRL);
@@ -112,6 +115,16 @@ public class MainActivity extends AppCompatActivity
         underlineview1 = (View) findViewById(R.id.underlineView);
         underlineview2 = (View) findViewById(R.id.underlineView1);
         uploadtext.setTextColor(getResources().getColor(R.color.tabcolor));
+        uploadtext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(MainActivity.this, Main2Activity.class);
+                intent.putExtra("CATEGORY",categoryList);
+                startActivity(intent);
+                finish();
+
+            }
+        });
 
         /* ADD CATEGORY IN DB
         db = new DatabaseHandler(getApplicationContext());
@@ -127,6 +140,7 @@ public class MainActivity extends AppCompatActivity
         */
 
     }
+
     // URL to get category JSON
     private boolean isOnline(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
@@ -303,23 +317,10 @@ public class MainActivity extends AppCompatActivity
 
                             viewPager = (ViewPager) findViewById(R.id.viewpagermain);
                             setupViewPager(viewPager);
-
+                            viewPager.setOffscreenPageLimit(3);
                             tabLayout = (TabLayout) findViewById(R.id.tabs);
                             tabLayout.setupWithViewPager(viewPager);
                             changeTabsFont();
-                            uploadtext.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    intent = new Intent(MainActivity.this, Main2Activity.class);
-                                    intent.putExtra("CATEGORY",categoryList);
-                                    startActivity(intent);
-                                    //overridePendingTransition( R.anim.righttoleft, R.anim.stable );
-                                    finish();
-
-
-                                }
-                            });
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -328,7 +329,14 @@ public class MainActivity extends AppCompatActivity
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("Error: ", error.getMessage());
+
+                NetworkResponse errorRes = error.networkResponse;
+                String stringData = "";
+                if(errorRes != null && errorRes.data != null){
+                    stringData = new String(errorRes.data);
+                }
+                Log.e("Error",stringData);
+
             }
         });
 

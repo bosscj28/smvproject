@@ -43,7 +43,7 @@
                 android:layout_marginLeft="12dp"
                 android:background="@drawable/sv_detailedfeeds_15" />
         </LinearLayout>
-
+        <!--
         <TextView
             android:id="@+id/titleDetail"
             android:layout_width="match_parent"
@@ -59,7 +59,7 @@
             android:textAlignment="viewStart"
             android:textColor="@android:color/background_dark"
             android:textSize="18sp" />
-
+        -->
         <TextView
             android:id="@+id/descDetail"
             android:layout_width="match_parent"

@@ -17,14 +17,14 @@
             android:id="@+id/backDetail"
             android:layout_width="24dp"
             android:layout_height="16dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="2dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
             android:background="@drawable/detailedfeeds" />
 
         <TextView
             android:id="@+id/headingDetail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1.12"
@@ -32,7 +32,7 @@
             android:text="@string/details"
             android:textAlignment="center"
             android:textColor="@android:color/background_dark"
-            android:textSize="28sp" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 

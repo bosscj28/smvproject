@@ -38,12 +38,14 @@ public class Main2Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.righttoleft, R.anim.hold);
         setContentView(R.layout.activity_main2);
         maindatasaver = new DataSaver();
         storysaver = new Story();
         Log.d("MAIN","2"+maindatasaver);
         catlist = new ArrayList<HashMap<String, String>>();
         catlist = (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("CATEGORY");
+        if(catlist.size() > 0)
         catlist.remove(0);
         Log.d("CATEGORY LIST","SIZE"+catlist.size());
         monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
@@ -51,18 +53,17 @@ public class Main2Activity extends AppCompatActivity {
         maintext = (TextView) findViewById(R.id.descDetail);
         uploadtext = (TextView) findViewById(R.id.likevw);
         newsfeed = (TextView) findViewById(R.id.nwsfd);
-
         underlineview1 = (View) findViewById(R.id.underlineView);
         underlineview2 = (View) findViewById(R.id.underlineView1);
-       // arrow1 = (ImageView) findViewById(R.id.arrow1);
+        //arrow1 = (ImageView) findViewById(R.id.arrow1);
         maintext.setTextColor(getResources().getColor(R.color.tabcolor));
         maintext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 intent = new Intent(Main2Activity.this, MainActivity.class);
                 startActivity(intent);
-                //overridePendingTransition( R.anim.lefttoright, R.anim.stable );
-                finish();
+                supportFinishAfterTransition();
             }
         });
 
@@ -111,6 +112,8 @@ public class Main2Activity extends AppCompatActivity {
         uploadtext.setTextColor(getResources().getColor(R.color.tabactivecolor));
         underlineview1.setVisibility(View.GONE);
     }
+
+
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());

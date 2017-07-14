@@ -3,7 +3,9 @@ package com.example.asus.story;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v4.view.PagerAdapter;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+
 
 public class DetailPageAdapter extends PagerAdapter {
 
@@ -54,7 +57,7 @@ public class DetailPageAdapter extends PagerAdapter {
         View v = inflater.inflate(R.layout.item_detail_activity,container,false);
         final Story current = mstory.get(position);
         ImageView img =(ImageView)v.findViewById(R.id.imgDetail);
-        TextView title  = (TextView)v.findViewById(R.id.titleDetail);
+        //TextView title  = (TextView)v.findViewById(R.id.titleDetail);
         TextView desc  = (TextView)v.findViewById(R.id.descDetail);
         share = (Button)v.findViewById(R.id.sharebutton);
         share.setOnClickListener(new View.OnClickListener() {
@@ -71,14 +74,21 @@ public class DetailPageAdapter extends PagerAdapter {
 
             }
         });
-        title.setTypeface(monstBold);
+       //title.setTypeface(monstBold);
         desc.setTypeface(monstRegular);
 
         Glide.with(context)
                 .load(current._url)
                 .into(img);
-        title.setText(current._caption);
-        desc.setText(current._desc);
+        //title.setText(current._caption);
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            desc.setText(Html.fromHtml(current._desc,1)); // for 24 api and more
+        } else {
+            desc.setText(Html.fromHtml(current._desc)); // or for older api
+        }
+
+
         container.addView(v);
         return v;
     }
