@@ -3,10 +3,13 @@ package com.example.asus.story;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +18,7 @@ import android.support.v4.view.ViewPager;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -37,6 +41,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,13 +62,11 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private View underlineview1,underlineview2;
     Intent intent;
-    private DatabaseHandler db;
-    ViewPager viewPager,mViewPager;
+    ViewPager viewPager;
     TabLayout tabLayout;
     Typeface monstRegular,monstBold;
     private String TAG = MainActivity.class.getSimpleName();
-    private ProgressDialog pDialog;
-    RelativeLayout mainRL;
+    private CoordinatorLayout coordinatorLayout;
     private ProgressDialog pd;
 
 
@@ -71,10 +78,12 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.lefttoright, R.anim.hold);
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
         //CATEGORY AS ARRAYLIST
-        mainRL = (RelativeLayout) findViewById(R.id.MainRL);
         categoryList = new ArrayList<>();
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorMainActivity);
         if(isOnline(this))
         {
             GetCategorys();
@@ -85,6 +94,12 @@ public class MainActivity extends AppCompatActivity
                     "Internet is not Connected",
                     Toast.LENGTH_LONG)
                     .show();
+            if(coordinatorLayout != null) {
+                Snackbar snackbar = Snackbar
+                        .make(coordinatorLayout, "Welcome to AndroidHive", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+            }
         }
         monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
         monstBold = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Bold.ttf");
@@ -280,12 +295,16 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
+            LoginManager.getInstance().logOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            MainActivity.this.finish();
 
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
     public void GetCategorys()
     {
@@ -345,6 +364,7 @@ public class MainActivity extends AppCompatActivity
         requestQueue.add(req);
 
     }
+
 }
 
 

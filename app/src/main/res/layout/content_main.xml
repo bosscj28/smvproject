@@ -1,48 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/MainRL"
+    android:id="@+id/coordinatorMainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.asus.story.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <view
-        android:id="@+id/view2"
-        class="android.support.v4.view.ViewPager"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="match_parent"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="0dp" />
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/view2"
-        android:layout_marginTop="10dp"
-        android:background="#ff2e54"
-        app:tabGravity="fill"
-        app:tabMode="scrollable"
-        app:tabSelectedTextColor="@android:color/background_light"
-        app:tabTextAppearance="@style/MyCustomTextAppearance"
-        app:tabTextColor="#fcb3c1">
-
-    </android.support.design.widget.TabLayout>
+        tools:layout_editor_absoluteY="8dp">
 
 
-    <view
-        android:id="@+id/viewpagermain"
-        class="android.support.v4.view.ViewPager"
-        id="@+id/view3"
-        layout_alignParentStart="true"
-        layout_below="@+id/tabLayout"
-        layout_marginTop="11dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tabs" />
+        <view
+            android:id="@+id/view2"
+            class="android.support.v4.view.ViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="0dp" />
 
-</RelativeLayout>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/view2"
+            android:layout_marginTop="10dp"
+            android:background="#ff2e54"
+            app:tabGravity="fill"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@android:color/background_light"
+            app:tabTextAppearance="@style/MyCustomTextAppearance"
+            app:tabTextColor="#fcb3c1">
+
+        </android.support.design.widget.TabLayout>
+
+
+        <view
+            android:id="@+id/viewpagermain"
+            class="android.support.v4.view.ViewPager"
+            id="@+id/view3"
+            layout_alignParentStart="true"
+            layout_below="@+id/tabLayout"
+            layout_marginTop="11dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tabs" />
+
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

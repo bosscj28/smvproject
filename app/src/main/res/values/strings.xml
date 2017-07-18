@@ -10,4 +10,6 @@
     <string name="next">Next  </string>
     <string name="google_android_map_api_key">AIzaSyDVfSNmSeaRk3DMIYhe4-4wvFf6KzSguCQ</string>
     <string name="details"><u>Details</u></string>
+    <string name="facebook_app_id">802282279950274</string>
+    <string name="fb_login_protocol_scheme">fb802282279950274</string>
 </resources>
