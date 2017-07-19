@@ -1,6 +1,7 @@
 package com.example.asus.story;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +11,6 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
-import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 
 public class Splash extends AppCompatActivity {
@@ -29,16 +29,9 @@ public class Splash extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_splash);
 
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(
-                    Profile oldProfile,
-                    Profile currentProfile) {
-                // App code
-               Log.d("CURRENT PROFILE","ID"+currentProfile.getId());
-                Log.d("CURRENT PROFILE","NAME"+currentProfile.getName());
-            }
-        };
+        SharedPreferences sharedPreFbid = getSharedPreferences("FB_ID_PREF",MODE_PRIVATE);
+        Long GetFB_ID = sharedPreFbid.getLong("FB_ID",0);
+        Log.d("FB_ID","LOGGED IN ID"+GetFB_ID);
 
         accessTokenTracker = new AccessTokenTracker() {
             @Override

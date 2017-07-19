@@ -206,7 +206,7 @@ public class detailsFragment extends Fragment {
                         String Savetitle, Savedesc;
                         Savetitle = title.getText().toString();
                         Savedesc = desc.getText().toString();
-
+                         Log.d("CJ NEXT CLICK","IMAGE - "+imagefilePath);
                         ((Main2Activity) getActivity()).storysaver.setcaption(Savetitle);
                         ((Main2Activity) getActivity()).storysaver.setdesc(Savedesc);
                         ((Main2Activity) getActivity()).storysaver.setPath(imagefilePath);
@@ -363,6 +363,7 @@ public class detailsFragment extends Fragment {
                 // Log.d("URL","URL - "+url);
 
                 String imagefilePath = ((Main2Activity) getActivity()).storysaver.getPath();
+                Log.d("CJ PATH","IMAGE - "+imagefilePath);
                 uploaded = mFtpClient.ftpUploadImage(imagefilePath,newname,"/",getActivity());
                 if(uploaded) {
                     Log.d("UPLOAD","YES"); handler.sendEmptyMessage(2);
@@ -384,7 +385,11 @@ public class detailsFragment extends Fragment {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             pd.dismiss();
-            ((Main2Activity) getActivity()).viewPager.setCurrentItem(1, true);
+            if(FTPstatus) {
+                if (uploaded) {
+                    ((Main2Activity) getActivity()).viewPager.setCurrentItem(1, true);
+                }
+            }
 
         }
     }

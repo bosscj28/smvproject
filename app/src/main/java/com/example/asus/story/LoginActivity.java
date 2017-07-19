@@ -1,10 +1,13 @@
 package com.example.asus.story;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.Request;
@@ -47,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
     private String facebook_id,f_name,m_name,l_name,gender,profile_image,email,contact,country;
     private LoginButton lb;
     ProgressDialog pd;
-    ArrayList<HashMap<String,String>> userDetail;
     public static final String REGISTER_URL = "http://kookyapps.com/smv/api/fblogin/";
     public static final String KEY_FB_ID = "fb_id";
     public static final String KEY_FNAME = "fb_name";
@@ -56,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
     public static final String KEY_CONTACT = "fb_contact";
     public static final String KEY_EMAIL = "fb_email";
     public static final String KEY_COUNTRY = "fb_country";
+
+    SharedPreferences sharedPreFbid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         welcome.setTypeface(monstRegular);
         to.setTypeface(monstRegular);
         EK.setTypeface(yellowtail);
+        sharedPreFbid = getSharedPreferences("FB_ID_PREF", Context.MODE_PRIVATE);
 
         lb = (LoginButton)findViewById(R.id.button);
         lb.setLoginBehavior(NATIVE_WITH_FALLBACK);
@@ -221,6 +226,11 @@ public class LoginActivity extends AppCompatActivity {
                                 String email = jobj.getString("user_email");
                                 String country = jobj.getString("user_country");
                                 String fb_id = jobj.getString("user_fb_id");
+                                Long Long_FB_id = Long.parseLong(fb_id);
+                                SharedPreferences.Editor editor = sharedPreFbid.edit();
+                                editor.putLong("FB_ID",Long_FB_id);
+                                editor.apply();
+
 
                             }
                             if(responseFlag == 1 && message.equals("Account create Successfully")) {

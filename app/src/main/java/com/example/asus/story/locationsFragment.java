@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.formats.NativeAd;
@@ -65,7 +66,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class locationsFragment extends Fragment {
 
-    ImageButton btn;
+    ImageView btn;
     TextView tv,next2;
 
     //------------ make your specific key ------------
@@ -85,7 +86,7 @@ public class locationsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v2 = inflater.inflate(R.layout.locations_frag, container, false);
-        btn=(ImageButton)v2.findViewById(R.id.findPlace);
+        btn=(ImageView) v2.findViewById(R.id.findPlace);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {

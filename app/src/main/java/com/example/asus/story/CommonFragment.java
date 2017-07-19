@@ -45,8 +45,9 @@ public class CommonFragment extends Fragment {
     private RecyclerView.LayoutManager mlayoutmanager;
     String upper,lower;
     int up,initLow;
-
+    boolean AppendDataFlag = false; // false - SetAdapter() and true - notifyDataSetChanged()
     String message;
+    private ArrayList<Story> story;
 
     public CommonFragment(){
 
@@ -85,11 +86,10 @@ public class CommonFragment extends Fragment {
         upper = "0";
         lower = "5";
         initLow = Integer.parseInt(lower);
-
+        story = new ArrayList<>();
         lv = (RecyclerView) v1.findViewById(list1);
         mlayoutmanager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL, false);
         lv.setLayoutManager(mlayoutmanager);
-        getData(message,upper,lower);
         swipeRefreshLayout = (SwipyRefreshLayout) v1.findViewById(swipyrefreshlayout);
         swipeRefreshLayout.setColorSchemeColors(R.color.colorAccent);
         //ON CREATE FRAGMENT CALL DATA
@@ -107,49 +107,31 @@ public class CommonFragment extends Fragment {
 
 
 
-        swipeRefreshLayout.setDistanceToTriggerSync(30);
+        swipeRefreshLayout.setDistanceToTriggerSync(100);
         swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh(SwipyRefreshLayoutDirection direction) {
                 if(direction == SwipyRefreshLayoutDirection.TOP)
                 {
-                    if(upper.equals("0"))
+                    Log.d("CJ VAL","UPPER"+upper);
+                    if(isOnline(context))
                     {
-                        if(isOnline(context))
-                        {
-                            getData(message,upper,lower);
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                        else
-                        {
-                            swipeRefreshLayout.setRefreshing(false);
-                            Toast.makeText(context, "Internet is not Connected", Toast.LENGTH_LONG).show();
-                        }
+                        AppendDataFlag = false;
+                        upper = "0";
+                        getData(message,upper,lower);
+                        swipeRefreshLayout.setRefreshing(false);
                     }
-                    else {
-                        if(isOnline(context))
-                        {
-                            up = Integer.parseInt(upper);
-                            up = up - initLow;
-                            upper = String.valueOf(up);
-                            Log.d("MESS" + message, "UPP" + upper);
-                            Log.d("LOWER", "Low" + lower);
-                            getData(message,upper,lower);
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
                         else
-                        {
-                            swipeRefreshLayout.setRefreshing(false);
-                            Toast.makeText(context, "Internet is not Connected", Toast.LENGTH_LONG).show();
-                        }
-
+                    {
+                        swipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(context, "Internet is not Connected", Toast.LENGTH_LONG).show();
                     }
-
                 }
                 if(direction == SwipyRefreshLayoutDirection.BOTTOM)
                 {
                     if(isOnline(context))
                     {
+                        AppendDataFlag = true;
                         up = Integer.parseInt(upper);
                         up = up + initLow;
                         upper = String.valueOf(up);
@@ -179,7 +161,7 @@ public class CommonFragment extends Fragment {
         }
         return false;
     }
-    public void getData(String id,String upperparam, String lowerparam)
+    public void getData(String id, String upperparam, String lowerparam)
     {
         // Tag used to cancel the request
 
@@ -200,7 +182,10 @@ public class CommonFragment extends Fragment {
                             Log.d("Response:%n %s", response.toString());
                             JSONArray news = response.getJSONArray("data");
 
-                            final ArrayList<Story> story = new ArrayList<>();
+                                if(upper.equals("0")){
+                                    story.clear();
+                                    Log.d("CJ STORY","M CLEARED");
+                                }
                             for (int i = 0; i < news.length(); i++) {
                                 JSONObject s = news.getJSONObject(i);
                                 Story storyobj = new Story();
@@ -212,12 +197,25 @@ public class CommonFragment extends Fragment {
                                 storyobj.setCat_id(s.getString("n_cat"));
                                 storyobj.setUrl(s.getString("n_img"));
                                 storyobj.setEmail(s.getString("n_email"));
+
                                 story.add(storyobj);
+                                Log.d("CJ SIZE","STORY SIZE - "+story.size());
+
 
                             }
 
                             data=new dataAdapter(context, story);
-                            lv.setAdapter(data);
+                            if (AppendDataFlag)
+                            {
+                                Log.d("CJ DATA FLAG","M APPENDED");
+                               data.notifyDataSetChanged();
+
+                            }
+                            else {
+                                Log.d("CJ DATA FLAG","M UPDATED");
+                                lv.setAdapter(data);
+                            }
+
 
 
                         } catch (JSONException e) {
@@ -228,6 +226,9 @@ public class CommonFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.e("Error: ", error.getMessage());
+                up = Integer.parseInt(upper);
+                up = up - initLow;
+                upper = String.valueOf(up);
             }
         });
 

@@ -85,7 +85,7 @@ public class DetailPageAdapter extends PagerAdapter {
         if (Build.VERSION.SDK_INT >= 24) {
             desc.setText(Html.fromHtml(current._desc,1)); // for 24 api and more
         } else {
-            desc.setText(Html.fromHtml(current._desc)); // or for older api
+            desc.setText(Html.fromHtml(current._desc)); // for for older api
         }
 
 

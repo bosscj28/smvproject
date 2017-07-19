@@ -34,6 +34,7 @@ public class DetailActivity extends AppCompatActivity {
         viewPager = (ViewPager)findViewById(R.id.viewpagerDetail);
         detailData=new DetailPageAdapter(this, storydata);
         viewPager.setAdapter(detailData);
+        viewPager.setOffscreenPageLimit(4);
         viewPager.addOnPageChangeListener(viewPagerPageChangeListener);
         viewPager.setCurrentItem(pos);
         heading.setTypeface(monstBold);

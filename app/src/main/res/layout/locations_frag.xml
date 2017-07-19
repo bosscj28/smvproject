@@ -8,14 +8,14 @@
     android:weightSum="3">
 
 
-    <ImageButton
+    <ImageView
         android:id="@+id/findPlace"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
         android:layout_gravity="center"
         android:layout_marginTop="5dp"
         android:layout_weight="0.2"
-        android:background="@drawable/map1"
+        android:src="@drawable/map1"
         tools:ignore="ContentDescription,HardcodedText" />
 
     <TextView

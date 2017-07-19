@@ -3,6 +3,7 @@ package com.example.asus.story;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -29,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +43,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.FacebookSdk;
@@ -66,13 +69,15 @@ public class MainActivity extends AppCompatActivity
     TabLayout tabLayout;
     Typeface monstRegular,monstBold;
     private String TAG = MainActivity.class.getSimpleName();
-    private CoordinatorLayout coordinatorLayout;
     private ProgressDialog pd;
-
-
-
-    private static String url = "http://kookyapps.com/smv/api/newsType";
+    SharedPreferences sharedPreFbid;
+    ImageView userImgNav;
+    TextView userNameNav,userEmailNav;
+    private static final String CATEGORY_URL = "http://kookyapps.com/smv/api/newsType";
+    public static final String PROFILE_URL = " http://kookyapps.com/smv/api/profile/";
+    public static final String KEY_FB_ID = "fb_id";
     ArrayList<HashMap<String,String>> categoryList;
+    NavigationView nav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,26 +86,7 @@ public class MainActivity extends AppCompatActivity
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
-        //CATEGORY AS ARRAYLIST
-        categoryList = new ArrayList<>();
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorMainActivity);
-        if(isOnline(this))
-        {
-            GetCategorys();
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(),
-                    "Internet is not Connected",
-                    Toast.LENGTH_LONG)
-                    .show();
-            if(coordinatorLayout != null) {
-                Snackbar snackbar = Snackbar
-                        .make(coordinatorLayout, "Welcome to AndroidHive", Snackbar.LENGTH_LONG);
 
-                snackbar.show();
-            }
-        }
         monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
         monstBold = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Bold.ttf");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -122,6 +108,39 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        userImgNav = (ImageView) header.findViewById(R.id.userImgNav);
+        userNameNav = (TextView) header.findViewById(R.id.userNameNav);
+        userEmailNav = (TextView) header.findViewById(R.id.userEmailNav);
+
+        //CATEGORY AS ARRAYLIST
+        categoryList = new ArrayList<>();
+        if(isOnline(this))
+        {
+            GetProfile();
+            GetCategorys();
+        }
+        else
+        {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Internet is not Connected", 10000)
+                    .setAction("RETRY",new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(isOnline(MainActivity.this))
+                            {
+                                GetProfile();
+                                GetCategorys();
+                            }
+                        }
+                    });
+            View snackbarView = snackbar.getView();
+            TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.WHITE);
+            snackbarView.setBackgroundColor(Color.BLACK);
+            snackbar.show();
+
+        }
+
         Typeface monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
         maintext = (TextView) findViewById(R.id.descDetail);
         uploadtext = (TextView) findViewById(R.id.likevw);
@@ -296,6 +315,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
             LoginManager.getInstance().logOut();
+            SharedPreferences.Editor editor = sharedPreFbid.edit();
+            editor.clear();
+            editor.commit();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             MainActivity.this.finish();
 
@@ -308,8 +330,8 @@ public class MainActivity extends AppCompatActivity
 
     public void GetCategorys()
     {
-        pd = ProgressDialog.show(this, "", "Please Wait!", true, false);
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,url,
+        //pd = ProgressDialog.show(this, "", "Please Wait!", true, false);
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,CATEGORY_URL,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -355,7 +377,73 @@ public class MainActivity extends AppCompatActivity
                     stringData = new String(errorRes.data);
                 }
                 Log.e("Error",stringData);
+                if (pd.isShowing())
+                    pd.dismiss();
 
+            }
+        });
+
+        // Adding request to request queue
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+        requestQueue.add(req);
+
+    }
+
+    public void GetProfile()
+    {
+        pd = ProgressDialog.show(this, "", "Please Wait!", true, false);
+
+        sharedPreFbid = getSharedPreferences("FB_ID_PREF",MODE_PRIVATE);
+        Long GetFB_ID = sharedPreFbid.getLong("FB_ID",0);
+        Log.d("FB_ID","LOGGED IN ID"+GetFB_ID);
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put(KEY_FB_ID,GetFB_ID.toString());
+
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,PROFILE_URL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+
+                            VolleyLog.v("Response:%n %s", response.toString(4));
+                            Log.d("Response:%n %s", response.toString());
+                            JSONObject UserProfile = response.getJSONObject("data");
+                            String id = UserProfile.getString("user_id");
+                            String fname = UserProfile.getString("user_name");
+                            String lname = UserProfile.getString("user_lname");
+                            String img = UserProfile.getString("user_img");
+                            String contact = UserProfile.getString("user_contact");
+                            String email = UserProfile.getString("user_email");
+                            String country = UserProfile.getString("user_country");
+                            String fb_id = UserProfile.getString("user_fb_id");
+
+                            Log.d("CJ","IMG"+userImgNav);
+                            if(!img.equals("")) {
+                                Glide.with(MainActivity.this)
+                                        .load(img)
+                                        .into(userImgNav);
+                            }
+                            userNameNav.setText(fname+' '+lname);
+                            userEmailNav.setText(email);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            if (pd.isShowing())
+                                pd.dismiss();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                NetworkResponse errorRes = error.networkResponse;
+                String stringData = "";
+                if(errorRes != null && errorRes.data != null){
+                    stringData = new String(errorRes.data);
+                }
+                Log.e("Error",stringData);
+                if (pd.isShowing())
+                    pd.dismiss();
             }
         });
 
