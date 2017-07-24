@@ -12,11 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 
 public class DetailPageAdapter extends PagerAdapter {
@@ -26,6 +29,7 @@ public class DetailPageAdapter extends PagerAdapter {
     private LayoutInflater inflater;
     Typeface monstRegular,monstBold;
     Button share;
+    ProgressBar progressBar;
 
 
     public DetailPageAdapter(Context context, ArrayList<Story> story) {
@@ -56,6 +60,7 @@ public class DetailPageAdapter extends PagerAdapter {
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.item_detail_activity,container,false);
         final Story current = mstory.get(position);
+        progressBar = (ProgressBar) v.findViewById(R.id.progressbarImg);
         ImageView img =(ImageView)v.findViewById(R.id.imgDetail);
         //TextView title  = (TextView)v.findViewById(R.id.titleDetail);
         TextView desc  = (TextView)v.findViewById(R.id.descDetail);
@@ -76,7 +81,6 @@ public class DetailPageAdapter extends PagerAdapter {
         });
        //title.setTypeface(monstBold);
         desc.setTypeface(monstRegular);
-
         Glide.with(context)
                 .load(current._url)
                 .into(img);

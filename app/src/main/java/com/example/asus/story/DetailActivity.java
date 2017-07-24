@@ -5,9 +5,9 @@ import android.graphics.Typeface;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,21 +17,22 @@ public class DetailActivity extends AppCompatActivity {
     private DetailPageAdapter detailData;
     ArrayList<Story> storydata;
     ViewPager viewPager;
-    Button back;
+    ImageView back;
     TextView heading;
     Typeface monstBold,monstRegular;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        storydata = new ArrayList<Story>();
+        storydata = new ArrayList<>();
         storydata = (ArrayList<Story>) getIntent().getSerializableExtra("STORY");
         int pos = getIntent().getIntExtra("POSITION",0);
         monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
         monstBold = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Bold.ttf");
-        back = (Button) findViewById(R.id.backDetail); //BACK BUTTON
+        back = (ImageView) findViewById(R.id.backDetail); //BACK BUTTON
         heading = (TextView) findViewById(R.id.headingDetail); //BACK BUTTON
         viewPager = (ViewPager)findViewById(R.id.viewpagerDetail);
+        viewPager.setPageTransformer(true,new ZoomOutPageTransformer());
         detailData=new DetailPageAdapter(this, storydata);
         viewPager.setAdapter(detailData);
         viewPager.setOffscreenPageLimit(4);

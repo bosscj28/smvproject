@@ -125,8 +125,8 @@ public class detailsFragment extends Fragment {
 
         View Vsearch = inflater.inflate(R.layout.alert_dialog_listview_search , container, false);
         EditText searchspinner = (EditText) Vsearch.findViewById(R.id.alertSearchEditText);
-        TextView titlecat = (TextView) Vsearch.findViewById(R.id.textView3);
-        titlecat.setTypeface(monstRegular, Typeface.BOLD);
+        //TextView titlecat = (TextView) Vsearch.findViewById(R.id.textView3);
+        //titlecat.setTypeface(monstRegular, Typeface.BOLD);
         searchspinner.setTypeface(monstRegular);
 
         final List<KeyPairBoolData> listArray0 = new ArrayList<>();

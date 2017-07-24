@@ -2,9 +2,11 @@ package com.example.asus.story;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,8 +30,10 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     ArrayList<Story> mstory;
     Typeface monstRegular,monstBold;
+    CardView cardView;
+    LinearLayout linearLayout;
+    ImageView imageView;
     private LayoutInflater inflater;
-
 
     public dataAdapter(Context context, ArrayList<Story> story) {
         super();
@@ -45,9 +50,17 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // Inflate the layout when viewholder created
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         View view = LayoutInflater.from(context)
                     .inflate(R.layout.liststrory, parent,false);
+        cardView=(CardView) view.findViewById(R.id.card);
+        linearLayout=(LinearLayout)view.findViewById(R.id.LL);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(getScreenWidth(),2*getScreenHeight()/15));
+        linearLayout.setPaddingRelative(20,0,20,0);
+        imageView=(ImageView)view.findViewById(R.id.imgView);
+        imageView.setLayoutParams(new  LinearLayout.LayoutParams(getScreenHeight()/8,getScreenHeight()/8));
         TextView txt = (TextView) view.findViewById(R.id.txtViewer);
+        txt.setLayoutParams(new LinearLayout.LayoutParams((getScreenWidth()-20*getScreenWidth()/100),getScreenHeight()/14));
         TextView likes = (TextView) view.findViewById(R.id.likes);
         TextView comments = (TextView) view.findViewById(R.id.comments);
         monstRegular = Typeface.createFromAsset(context.getAssets(), "fonts/Montserrat-Regular.ttf");
@@ -158,6 +171,12 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             return BitmapFactory.decodeByteArray(b, 0, b.length);
     }
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
 
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
 }
 

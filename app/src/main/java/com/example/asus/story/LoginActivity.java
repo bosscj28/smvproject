@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
     private String facebook_id,f_name,m_name,l_name,gender,profile_image,email,contact,country;
     private LoginButton lb;
     ProgressDialog pd;
+    SharedPreferences sharedPreProfile;
     public static final String REGISTER_URL = "http://kookyapps.com/smv/api/fblogin/";
     public static final String KEY_FB_ID = "fb_id";
     public static final String KEY_FNAME = "fb_name";
@@ -58,8 +59,6 @@ public class LoginActivity extends AppCompatActivity {
     public static final String KEY_CONTACT = "fb_contact";
     public static final String KEY_EMAIL = "fb_email";
     public static final String KEY_COUNTRY = "fb_country";
-
-    SharedPreferences sharedPreFbid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +76,8 @@ public class LoginActivity extends AppCompatActivity {
         welcome.setTypeface(monstRegular);
         to.setTypeface(monstRegular);
         EK.setTypeface(yellowtail);
-        sharedPreFbid = getSharedPreferences("FB_ID_PREF", Context.MODE_PRIVATE);
+
+        sharedPreProfile = getSharedPreferences("Logged_in_user",MODE_PRIVATE);
 
         lb = (LoginButton)findViewById(R.id.button);
         lb.setLoginBehavior(NATIVE_WITH_FALLBACK);
@@ -226,12 +226,14 @@ public class LoginActivity extends AppCompatActivity {
                                 String email = jobj.getString("user_email");
                                 String country = jobj.getString("user_country");
                                 String fb_id = jobj.getString("user_fb_id");
-                                Long Long_FB_id = Long.parseLong(fb_id);
-                                SharedPreferences.Editor editor = sharedPreFbid.edit();
-                                editor.putLong("FB_ID",Long_FB_id);
+
+                                SharedPreferences.Editor editor = sharedPreProfile.edit();
+                                editor.putString("Logged_user_img",img);
+                                editor.putString("Logged_user_fb_id",fb_id);
+                                editor.putString("Logged_user_id",id);
+                                editor.putString("Logged_user_name",fname+' '+lname);
+                                editor.putString("Logged_user_email",email);
                                 editor.apply();
-
-
                             }
                             if(responseFlag == 1 && message.equals("Account create Successfully")) {
                                 //Toast.makeText(LoginActivity.this, "User Registered Successful", Toast.LENGTH_LONG).show();

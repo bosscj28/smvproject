@@ -8,6 +8,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
@@ -136,8 +137,8 @@ public class MultiSpinnerSearch extends AppCompatSpinner implements OnCancelList
 
         builder = new AlertDialog.Builder(getContext(), R.style.myDialog);
 
-       // builder.setTitle(spinnerTitle);
 
+       // builder.setTitle(spinnerTitle);
         final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.alert_dialog_listview_search, null);
         EditText searchspinner = (EditText) view.findViewById(R.id.alertSearchEditText);
@@ -184,7 +185,10 @@ public class MultiSpinnerSearch extends AppCompatSpinner implements OnCancelList
         });
 
         builder.setOnCancelListener(this);
+
         ad = builder.show();
+        ad.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         return true;
     }
     public void SetSelected(int sel){
@@ -276,8 +280,8 @@ public class MultiSpinnerSearch extends AppCompatSpinner implements OnCancelList
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            final int backgroundColor = (position%2 == 0) ? R.color.list_even : R.color.list_odd;
-            convertView.setBackgroundColor(ContextCompat.getColor(getContext(), backgroundColor));
+           /* final int backgroundColor = (position%2 == 0) ? R.color.list_even : R.color.list_odd;
+            convertView.setBackgroundColor(ContextCompat.getColor(getContext(), backgroundColor));*/
 
             final KeyPairBoolData data = arrayList.get(position);
 
@@ -310,9 +314,8 @@ public class MultiSpinnerSearch extends AppCompatSpinner implements OnCancelList
             });
             if (data.isSelected()) {
                 holder.textView.setTypeface(monstRegular, Typeface.BOLD);
-                holder.textView.setTextColor(Color.WHITE);
-
-                convertView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.list_selected));
+                //holder.textView.setTextColor(Color.WHITE);
+                //convertView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.list_selected));
             }
             holder.checkBox.setTag(holder);
 
