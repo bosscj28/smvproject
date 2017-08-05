@@ -4,11 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.asus.story.DetailActivity"
+    tools:context="com.example.asus.story.CommentActivity"
     android:orientation="vertical">
-
     <LinearLayout
-        android:id="@+id/detail_tab_layout"
+        android:id="@+id/Comment_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -16,7 +15,7 @@
         android:weightSum="1">
 
         <ImageView
-            android:id="@+id/backDetail"
+            android:id="@+id/backComment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -26,48 +25,56 @@
             android:src="@drawable/leftarrow" />
 
         <TextView
-            android:id="@+id/headingDetail"
+            android:id="@+id/headingComment"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginRight="10dp"
             android:gravity="center"
             android:paddingRight="15dp"
-            android:text="@string/details"
+            android:text="@string/comments"
             android:textAlignment="center"
             android:textColor="@android:color/background_dark"
             android:textSize="18sp" />
 
     </LinearLayout>
 
-    <view
-        android:id="@+id/viewpagerDetail"
-        class="android.support.v4.view.ViewPager"
-        layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <LinearLayout
-        android:id="@+id/detail_cmnt_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:orientation="horizontal"
-        android:paddingLeft="8dp">
+        android:layout_marginBottom="5dp">
 
-        <EditText
-            android:id="@+id/editTextc_mnt"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:ems="10"
-            android:hint="Add a comment..          "
-            android:imeOptions="flagNoEnterAction"
-            android:inputType="textPersonName" />
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="Title" />
+    </LinearLayout>
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Comment" />
+            android:layout_marginBottom="3dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_weight="1"
+                android:text="Comments" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/CommentRView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 </LinearLayout>

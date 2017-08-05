@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -33,13 +34,18 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     CardView cardView;
     LinearLayout linearLayout;
     ImageView imageView;
+    String CategoryName;
     private LayoutInflater inflater;
 
-    public dataAdapter(Context context, ArrayList<Story> story) {
+    public dataAdapter(){
+    }
+
+    public dataAdapter(Context context, ArrayList<Story> story,String CategoryName) {
         super();
         this.context = context;
         inflater= LayoutInflater.from(context);
         this.mstory = story;
+        this.CategoryName=CategoryName;
         for(int i=0; i<story.size(); i++)
         {
             Log.d("ADAPTER STORY","DATA OF STORY "+story.get(i).getID());
@@ -50,13 +56,18 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // Inflate the layout when viewholder created
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(context)
                     .inflate(R.layout.liststrory, parent,false);
-        cardView=(CardView) view.findViewById(R.id.card);
+
+        cardView=(CardView)view.findViewById(R.id.card);
+        cardView.setLayoutParams(new LinearLayout.LayoutParams(getScreenWidth()-getScreenWidth()/25,getScreenHeight()/8));
         linearLayout=(LinearLayout)view.findViewById(R.id.LL);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(getScreenWidth(),2*getScreenHeight()/15));
         linearLayout.setPaddingRelative(20,0,20,0);
+        //linearLayout.setVerticalFadingEdgeEnabled(true);
+        //cardView.setRotationX(10);
+        //cardView.setRotationY(1.4f);
+        //linearLayout.setBackgroundColor(Color.rgb(204,204,255));
         imageView=(ImageView)view.findViewById(R.id.imgView);
         imageView.setLayoutParams(new  LinearLayout.LayoutParams(getScreenHeight()/8,getScreenHeight()/8));
         TextView txt = (TextView) view.findViewById(R.id.txtViewer);
@@ -150,6 +161,7 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         Intent i = new Intent(context1,DetailActivity.class);
                         i.putExtra("STORY",mstory);
                         i.putExtra("POSITION",getLayoutPosition());
+                        i.putExtra("CATEGORY_NAME",CategoryName);
                         context1.startActivity(i);
 
 
@@ -172,8 +184,8 @@ public class dataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return BitmapFactory.decodeByteArray(b, 0, b.length);
     }
     public static int getScreenWidth() {
-        return Resources.getSystem().getDisplayMetrics().widthPixels;
-    }
+    return Resources.getSystem().getDisplayMetrics().widthPixels;
+}
 
     public static int getScreenHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;

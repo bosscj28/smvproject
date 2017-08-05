@@ -2,17 +2,20 @@ package com.example.asus.story;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -45,6 +48,7 @@ public class CommonFragment extends Fragment {
     private RecyclerView.LayoutManager mlayoutmanager;
     String upper,lower;
     int up,initLow;
+    String CategoryName;
     boolean AppendDataFlag = false; // false - SetAdapter() and true - notifyDataSetChanged()
     String message;
     private ArrayList<Story> story;
@@ -83,6 +87,7 @@ public class CommonFragment extends Fragment {
         View v1 =inflater.inflate(R.layout.fragment_common, container, false);
         // Intial PARAMS
         message = getArguments().getString(EXTRA_MESSAGE);
+        CategoryName = ((MainActivity) getActivity()).categoryList.get(Integer.parseInt(message)-1).get("name");
         upper = "0";
         lower = "5";
         initLow = Integer.parseInt(lower);
@@ -150,6 +155,7 @@ public class CommonFragment extends Fragment {
         });
 
         return v1;
+
     }
 
     private boolean isOnline(Context context) {
@@ -204,7 +210,7 @@ public class CommonFragment extends Fragment {
 
                             }
 
-                            data=new dataAdapter(context, story);
+                            data=new dataAdapter(context, story,CategoryName);
                             if (AppendDataFlag)
                             {
                                 Log.d("CJ DATA FLAG","M APPENDED");
@@ -235,4 +241,5 @@ public class CommonFragment extends Fragment {
        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(req);
     }
+
 }

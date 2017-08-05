@@ -1,15 +1,16 @@
 <resources>
-    <string name="app_name">Story</string>
+    <string name="app_name">STORY</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="upload">Upload</string>
+    <string name="upload">UPLOAD</string>
     <string name="newsfeed">News Feed</string>
     <string name="next">Next  </string>
     <string name="google_android_map_api_key">AIzaSyDVfSNmSeaRk3DMIYhe4-4wvFf6KzSguCQ</string>
     <string name="details"><u>Details</u></string>
+    <string name="comments"><u>Comments</u></string>
     <string name="facebook_app_id">802282279950274</string>
     <string name="fb_login_protocol_scheme">fb802282279950274</string>
 </resources>

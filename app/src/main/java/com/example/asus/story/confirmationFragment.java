@@ -247,6 +247,11 @@ public class confirmationFragment extends Fragment {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    if(pd.isShowing())
+                    {
+                        pd.dismiss();
+                        Toast.makeText(getActivity(), "OTP Verification Failed ! Try Again", Toast.LENGTH_SHORT).show();
+                    }
                     VolleyLog.e("Error: ", error.getMessage());
                 }
             });

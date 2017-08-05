@@ -44,7 +44,7 @@
                 android:layout_weight="0.15"
                 android:paddingBottom="0dp"
                 android:paddingTop="16dp"
-                android:text="STORY"
+                android:text="@string/app_name"
                 android:textSize="20sp"
                 tools:ignore="ObsoleteLayoutParam,RelativeOverlap,RtlHardcoded" />
 
@@ -83,7 +83,7 @@
                 android:gravity="center"
                 android:paddingBottom="0dp"
                 android:paddingTop="16dp"
-                android:text="UPLOAD"
+                android:text="@string/upload"
                 android:textSize="20sp"
                 tools:ignore="ObsoleteLayoutParam" />
 

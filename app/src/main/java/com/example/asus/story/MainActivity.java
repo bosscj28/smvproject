@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -23,22 +24,26 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.SubMenu;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.widget.GridLayout.LayoutParams;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +62,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.tagmanager.Container;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,6 +71,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 
 public class MainActivity extends AppCompatActivity
@@ -73,7 +82,22 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private View underlineview1,underlineview2;
     Intent intent;
-    ViewPager viewPager;
+    String upper,lower;
+    int up,initLow;
+    int currentPage;
+    Handler handlervwpgr,handlerpgrs;
+    Runnable update;
+    Context context;
+    ViewPager viewPager,vwpager;
+    private LayoutInflater inflater;
+    private ProgressBar progressBar;
+    private int progressStatus;
+    private Container container;
+    ArrayList<Story> Sstory;
+    Menu menu;
+    SliderAdapter sliderAdapter,Sadapter;
+    String popular;
+    boolean AppendDataFlag = false;
     TabLayout tabLayout;
     Typeface monstRegular,monstBold;
     private String TAG = MainActivity.class.getSimpleName();
@@ -85,29 +109,6 @@ public class MainActivity extends AppCompatActivity
     public static final String KEY_FB_ID = "fb_id";
     ArrayList<HashMap<String,String>> categoryList;
     SharedPreferences sharedPreProfile;
-    int[][] state = new int[][] {
-            new int[] {android.R.attr.state_checked}, // checked
-            new int[] {-android.R.attr.state_checked}
-    };
-
-    int[] color = new int[] {
-            Color.rgb(255,46,84),
-            (Color.BLACK)
-    };
-
-    ColorStateList csl = new ColorStateList(state, color);
-
-    int[][] state2 = new int[][] {
-            new int[] {android.R.attr.state_checked}, // checked
-            new int[] {-android.R.attr.state_checked}
-    };
-
-    int[] color2 = new int[] {
-            Color.rgb(255,46,84),
-            Color.GRAY
-    };
-
-    ColorStateList csl2 = new ColorStateList(state2, color2);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +116,8 @@ public class MainActivity extends AppCompatActivity
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
-
+        upper = "0";
+        lower = "10";
         monstRegular = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Regular.ttf");
         monstBold = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Bold.ttf");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -137,8 +139,36 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        menu=navigationView.getMenu();
         View header = navigationView.getHeaderView(0);
+        vwpager=(ViewPager)findViewById(R.id.view2);
+       // vwpager.beginFakeDrag();
+        dataAdapter da=new dataAdapter();
+        LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(da.getScreenWidth()-20,36*da.getScreenHeight()/100);
+        vwpager.setLayoutParams(params);
+        vwpager.setPageMargin(-2*da.getScreenWidth()/10);
+        //vwpager.setPadding(10,10,0,0);
+
+        //pager timer
+        handlervwpgr = new Handler();
+        currentPage=vwpager.getCurrentItem();
+        vwpager.addOnPageChangeListener(viewPagerPageChangeListener);
+        update = new Runnable() {
+            public void run() {
+                if (currentPage ==Integer.parseInt(lower)-1) {
+                    currentPage = 0;
+                }
+                vwpager.setCurrentItem(currentPage++, true);
+
+            }
+        };
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handlervwpgr.post(update);
+            }
+        }, 5000, 5000);
+
         userImgNav = (ImageView) header.findViewById(R.id.userImgNav);
         userNameNav = (TextView) header.findViewById(R.id.userNameNav);
         userEmailNav = (TextView) header.findViewById(R.id.userEmailNav);
@@ -160,9 +190,11 @@ public class MainActivity extends AppCompatActivity
                     .load(Logged_img)
                     .into(userImgNav);
             GetCategorys();
+
         }
         else
         {
+            initMenufull();
             //Load profile img as empty if online
             userImgNav.setImageResource(R.drawable.user);
             Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Internet is not Connected", 10000)
@@ -219,8 +251,6 @@ public class MainActivity extends AppCompatActivity
             //Log.d("id1 "+id1,"id2 "+id2);
         }
         */
-
-
     }
 
     private boolean isOnline(Context context) {
@@ -347,13 +377,55 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        Toast.makeText(MainActivity.this,"TITLE - "+item.getTitle()+"ID - "+item.getItemId(), Toast.LENGTH_LONG).show();
+        if(item.getTitle().equals("My Feeds"))
+        {
 
-        NavigationView nav = (NavigationView) findViewById(R.id.nav_view);
-        nav.setItemTextColor(csl);
-        nav.setItemIconTintList(csl2);
-        nav.setItemBackgroundResource(R.color.bg);
+        }else if (item.getTitle().equals("My Favorite"))
+        {
+
+        }else if(item.getTitle().equals("About us")){
+            Intent intent = new Intent(MainActivity.this,NavCommonActivity.class);
+            intent.putExtra("Title",item.getTitle());
+            startActivity(intent);
+        }else if(item.getTitle().equals("Contact us")){
+            Intent intent = new Intent(MainActivity.this,NavCommonActivity.class);
+            intent.putExtra("Title",item.getTitle());
+            startActivity(intent);
+        }else if(item.getTitle().equals("Donation")){
+            Intent intent = new Intent(MainActivity.this,NavCommonActivity.class);
+            intent.putExtra("Title",item.getTitle());
+            startActivity(intent);
+        }else if(item.getTitle().equals("Share")){
+
+        }else if (item.getTitle().equals("Rate us")){
+
+        }else if(item.getTitle().equals("Logout")){
+            LoginManager.getInstance().logOut();
+            SharedPreferences.Editor editor2 = sharedPreProfile.edit();
+            editor2.clear();
+            editor2.commit();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            MainActivity.this.finish();
+        }else {
+            String Str = item.getTitle().toString();
+            if(categoryList.size()!=0){
+                for (int i = 0; i < categoryList.size(); i++)
+                {
+                    if(categoryList.get(i).get("name").equals(Str)){
+                        //Call Intent
+                        // int cat_id = categoryList.get(i).get("id");
+                        //Cat id as PutExtra
+
+                    }
+
+                }
+
+            }
+
+        }            // Handle navigation view item clicks here.
+       /* int id = item.getItemId();
+
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
@@ -372,7 +444,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             MainActivity.this.finish();
 
-        }
+        }*/
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -402,18 +474,27 @@ public class MainActivity extends AppCompatActivity
                                 cats.put("id",id);
                                 cats.put("name",name);
                                 categoryList.add(cats);
-
                             }
-                                if (pd.isShowing())
+                            for(int j=0;j<categoryList.size();j++)
+                            {
+                                Log.d("CATEGORY","category"+categoryList.get(j).get("name"));
+                                if(categoryList.get(j).get("name").equals("Popular"))
+                                    popular=categoryList.get(j).get("id");
+                            }
+                            initMenufull();
+                            if (pd.isShowing())
                                 pd.dismiss();
 
                             viewPager = (ViewPager) findViewById(R.id.viewpagermain);
+                            viewPager.setHorizontalScrollBarEnabled(true);
                             viewPager.setPageTransformer(true,new DepthPageTransformer());
                             setupViewPager(viewPager);
                             viewPager.setOffscreenPageLimit(3);
                             tabLayout = (TabLayout) findViewById(R.id.tabs);
                             tabLayout.setupWithViewPager(viewPager);
                             changeTabsFont();
+
+                            popularStories(popular,upper,lower);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -441,6 +522,124 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    public void popularStories(String id,String upperparam, String lowerparam){
+        String url = "http://kookyapps.com/smv/api/FetchNews/";
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("cat_id", id);
+        params.put("upper_limit",upperparam);
+        params.put("lower_limit",lowerparam);
+
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,url, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+
+                            VolleyLog.v("Response:%n %s", response.toString(4));
+                            Log.d("Response:%n %s", response.toString());
+                            JSONArray news = response.getJSONArray("data");
+                            Sstory = new ArrayList<>();
+                            if(upper.equals("0")){
+                                Sstory.clear();
+                                Log.d("CJ STORY","M CLEARED");
+                            }
+                            Log.d("length","len"+news.length());
+                            for (int i = 0; i < news.length(); i++) {
+                                Story storyobj = new Story();
+                                if(i==news.length()-1){
+                                    JSONObject s = news.getJSONObject(0);
+                                    int n = Integer.parseInt(s.get("n_id").toString());
+                                    storyobj.setID(n);
+                                    storyobj.setcaption(s.getString("n_title"));
+                                    storyobj.setdesc(s.getString("n_desc"));
+                                    storyobj.setCat_id(s.getString("n_cat"));
+                                    storyobj.setUrl(s.getString("n_img"));
+                                    storyobj.setEmail(s.getString("n_email"));
+
+                                }else {
+                                    JSONObject s = news.getJSONObject(i);
+                                    int n = Integer.parseInt(s.get("n_id").toString());
+                                    storyobj.setID(n);
+                                    storyobj.setcaption(s.getString("n_title"));
+                                    storyobj.setdesc(s.getString("n_desc"));
+                                    storyobj.setCat_id(s.getString("n_cat"));
+                                    storyobj.setUrl(s.getString("n_img"));
+                                    storyobj.setEmail(s.getString("n_email"));
+                                }
+                                Sstory.add(storyobj);
+                                Log.d("CJ SIZE","STORY SIZE - "+Sstory.size());
+
+
+                            }
+
+                            sliderAdapter=new SliderAdapter(MainActivity.this,Sstory);
+                            vwpager.setAdapter(sliderAdapter);
+                            vwpager.setOffscreenPageLimit(9);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+                up = Integer.parseInt(upper);
+                up = up - initLow;
+                upper = String.valueOf(up);
+            }
+        });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+        requestQueue.add(req);
+    }
+    public void initMenufull(){
+        // Menu Initialization
+        menu.clear();
+        menu.add(0, 1, Menu.FIRST, "My Feeds").setIcon(R.drawable.ic_menu_camera);
+        menu.add(0, 2, Menu.FIRST, "My Favorite").setIcon(R.drawable.ic_menu_gallery);
+        if(categoryList.size()!=0) {
+        for (int i = 0; i <categoryList.size(); i++) {
+            String category = categoryList.get(i).get("name");
+            String id = categoryList.get(i).get("id");
+            menu.add(1, 3+i, Menu.FIRST, category).setIcon(R.drawable.ic_menu_category);
+        }
+    }
+    int lastid = categoryList.size();
+    lastid = lastid + 3;
+        menu.add(2,lastid,Menu.FIRST,"About us").setIcon(R.drawable.ic_menu_about);
+        menu.add(2,lastid+1,Menu.FIRST,"Contact us").setIcon(R.drawable.ic_menu_contact);
+        menu.add(2,lastid+2,Menu.FIRST,"Donation").setIcon(R.drawable.ic_menu_donation);
+        menu.add(2,lastid+3,Menu.FIRST,"Share").setIcon(R.drawable.ic_menu_share);
+        menu.add(2,lastid+4,Menu.FIRST,"Rate us").setIcon(R.drawable.ic_menu_rateus);
+        menu.add(2,lastid+5,Menu.FIRST,"Logout").setIcon(R.drawable.ic_logout);
+
+        menu.setGroupCheckable(0,true,true);
+        menu.setGroupCheckable(1,true,true);
+        menu.setGroupCheckable(2,true,true);
+}
+
+    ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
+
+        @Override
+        public void onPageSelected(int position) {
+            currentPage=vwpager.getCurrentItem();
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+    };
 }
 
 

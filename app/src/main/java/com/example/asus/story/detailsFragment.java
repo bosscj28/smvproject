@@ -5,7 +5,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,8 +22,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +42,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -46,6 +53,9 @@ public class detailsFragment extends Fragment {
     TextView next1;
     EditText title,desc;
     ImageView img;
+    public  String date;
+    public String time;
+    TextView text;
     private Uri resultUri = null;
     private DatabaseHandler db;
     MultiSpinnerSearch spinner;
@@ -56,6 +66,7 @@ public class detailsFragment extends Fragment {
     private String UploadedUrl;
     private ProgressDialog pd;
     boolean FTPstatus,uploaded;
+    LinearLayout linearlayout;
     private Handler handler = new Handler() {
 
         public void handleMessage(android.os.Message msg) {
@@ -115,6 +126,8 @@ public class detailsFragment extends Fragment {
         title = (EditText) v1.findViewById(R.id.title);
         desc = (EditText) v1.findViewById(R.id.desc);
         img = (ImageView)getActivity().findViewById(R.id.upimg);
+        text=(TextView)getActivity().findViewById(R.id.txt);
+        linearlayout=(LinearLayout)getActivity().findViewById(R.id.ForUpload);
         monstRegular = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Montserrat-Regular.ttf");
         monstBold = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Montserrat-Bold.ttf");
         next1.setTypeface(monstRegular);
@@ -282,9 +295,29 @@ public class detailsFragment extends Fragment {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 resultUri = result.getUri();
+                Uri uri = result.getOriginalUri();
+                Log.d("path",""+uri);
                 img.setImageURI(resultUri);
-                imagefilePath = takeScreenshotAndSave(img);
+                try {
+                    ExifInterface exifInterface=new ExifInterface(uri.getPath());
+                    String date_time=exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                    date= date_time.substring(0,10);
+                    Log.d("date",""+date);
+                    time=date_time.substring(11,19);
+                    Log.d("Time",""+time);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                text.setText(date+"\n"+time);
+                text.setTextColor(Color.parseColor("#FFCA28"));
+                text.bringToFront();
+                imagefilePath = takeScreenshotAndSave(linearlayout);
                 Log.d("TAG","imagePath::"+imagefilePath);
+                /*File file=new File(imagefilePath);
+                Date date=new Date(file.lastModified());
+                String time=new SimpleDateFormat("HH:mm:ss").format(date);
+                Log.d("date",""+date);
+                Log.d("time",""+time);*/
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
@@ -292,11 +325,15 @@ public class detailsFragment extends Fragment {
     }
 
     private String takeScreenshotAndSave(View u){
-        u.setDrawingCacheEnabled(true);
+/*        u.setDrawingCacheEnabled(true);
         u.buildDrawingCache(true);
-        Bitmap b = Bitmap.createBitmap(u.getDrawingCache());
+        Bitmap bitmap = Bitmap.createBitmap(u.getDrawingCache());
         u.setDrawingCacheEnabled(false);
-
+*/
+        Bitmap bitmap = Bitmap.createBitmap(u.getWidth(),
+                u.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        u.draw(canvas);
         //Save bitmap
         File file = new File(Environment.getExternalStorageDirectory()
                 .getPath(), "SMV Folder");
@@ -312,10 +349,10 @@ public class detailsFragment extends Fragment {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(myPath);
-            b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-            MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), b, "Screen", "screen");
+            MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), bitmap, "Screen", "screen");
             return uriSting;
         }catch (FileNotFoundException e) {
             // TODO Auto-generated catch block

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +29,7 @@ public class DetailPageAdapter extends PagerAdapter {
     ArrayList<Story> mstory;
     private LayoutInflater inflater;
     Typeface monstRegular,monstBold;
-    Button share;
+    Button share,comment;
     ProgressBar progressBar;
 
 
@@ -61,9 +62,17 @@ public class DetailPageAdapter extends PagerAdapter {
         View v = inflater.inflate(R.layout.item_detail_activity,container,false);
         final Story current = mstory.get(position);
         progressBar = (ProgressBar) v.findViewById(R.id.progressbarImg);
+        comment=(Button) v.findViewById(R.id.button2);
         ImageView img =(ImageView)v.findViewById(R.id.imgDetail);
-        //TextView title  = (TextView)v.findViewById(R.id.titleDetail);
         TextView desc  = (TextView)v.findViewById(R.id.descDetail);
+        TextView titl=(TextView)v.findViewById(R.id.titleDetail);
+        final RecyclerView targetview=(RecyclerView)v.findViewById(R.id.cmnts_Rview);
+        comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            targetview.getParent().requestChildFocus(targetview,targetview);
+            }
+        });
         share = (Button)v.findViewById(R.id.sharebutton);
         share.setOnClickListener(new View.OnClickListener() {
 
@@ -81,15 +90,18 @@ public class DetailPageAdapter extends PagerAdapter {
         });
        //title.setTypeface(monstBold);
         desc.setTypeface(monstRegular);
+        titl.setTypeface(monstRegular);
         Glide.with(context)
                 .load(current._url)
                 .into(img);
         //title.setText(current._caption);
 
         if (Build.VERSION.SDK_INT >= 24) {
-            desc.setText(Html.fromHtml(current._desc,1)); // for 24 api and more
+            desc.setText(Html.fromHtml(current._desc,1));
+            titl.setText(Html.fromHtml(current._caption,2));// for 24 api and more
         } else {
-            desc.setText(Html.fromHtml(current._desc)); // for for older api
+            desc.setText(Html.fromHtml(current._desc));
+            titl.setText(Html.fromHtml(current._caption));// for for older api
         }
 
 
