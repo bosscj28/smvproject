@@ -45,15 +45,39 @@
             android:layout_height="60dp"
             android:layout_marginTop="-54dp"
             android:background="@drawable/dark"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="5dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:paddingTop="5dp">
 
-            <Button
-                android:id="@+id/sharebutton"
-                android:layout_width="24sp"
-                android:layout_height="24sp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="12dp"
-                android:background="@drawable/sv_detailedfeeds_15" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
+
+                <ToggleButton
+                    android:id="@+id/Likebutton"
+                    android:layout_width="24sp"
+                    android:layout_height="24sp"
+                    android:background="@drawable/likebutton"
+                    android:textOn=""
+                    android:textOff=""
+                    android:layout_alignParentLeft="true"
+                    android:layout_weight="0.00"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false" />
+
+                <ImageView
+                    android:id="@+id/sharebutton"
+                    android:layout_width="24sp"
+                    android:layout_height="24sp"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="0.01dp"
+                    android:background="@drawable/sv_detailedfeeds_15" />
+            </RelativeLayout>
         </LinearLayout>
 
         <TextView

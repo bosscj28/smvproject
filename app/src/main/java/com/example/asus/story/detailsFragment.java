@@ -33,6 +33,7 @@ import com.example.asus.story.multispinner.MultiSpinnerSearch;
 import com.example.asus.story.multispinner.KeyPairBoolData;
 import com.example.asus.story.multispinner.SpinnerListener;
 
+import com.example.asus.story.utils.Utils;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -396,7 +397,7 @@ public class detailsFragment extends Fragment {
                 //Log.d("TAG", "CURRENT DIR"+getCurrentDir);
                 //Log.d("TAG", "FILE PATH"+imagefilePath);
                 String newname = System.currentTimeMillis() + ".jpg";
-                UploadedUrl = "http://kookyapps.com/smv/uploads/"+newname;
+                UploadedUrl = Utils.FTP_IMG_URL+newname;
                 // Log.d("URL","URL - "+url);
 
                 String imagefilePath = ((Main2Activity) getActivity()).storysaver.getPath();
@@ -432,36 +433,6 @@ public class detailsFragment extends Fragment {
     }
 
 }
-  /*  private void connectToFTPAddress() {
-        mFtpClient = new MyFTPClientFunctions();
-        pd = ProgressDialog.show(getContext(), "", "Uploading...",
-                true, false);
-        new Thread(new Runnable() {
-            public void run() {
-                FTPstatus = mFtpClient.ftpConnect("166.62.28.118","smv@kookyapps.com","kooky_smv",21);
-                if (FTPstatus) {
-                    boolean uploaded = false;
-                    //Log.d("TAG", "Connection Success");
-                    String getCurrentDir = mFtpClient.ftpGetCurrentWorkingDirectory();
-                    //Log.d("TAG", "CURRENT DIR"+getCurrentDir);
-
-                    //Log.d("TAG", "FILE PATH"+imagefilePath);
-                    String newname = System.currentTimeMillis() + ".jpg";
-                    UploadedUrl = "kookyapps.com/smv/uploads/"+newname;
-                   // Log.d("URL","URL - "+url);
-
-                    uploaded = mFtpClient.ftpUploadImage(imagefilePath,newname,"/",getActivity());
-                    if(uploaded) {Log.d("UPLOAD","YES"); handler.sendEmptyMessage(2);}
-                    else{Log.d("UPLOAD","NO"); handler.sendEmptyMessage(4);}
-
-                    mFtpClient.ftpDisconnect();
-
-                } else {
-                    handler.sendEmptyMessage(-1);
-                }
-            }
-        }).start();
-    } */
 
 
 

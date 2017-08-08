@@ -25,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.asus.story.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,10 +33,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class confirmationFragment extends Fragment {
-    public static final String REGISTER_URL = "http://kookyapps.com/smv/api/uploadNews/";
-    public static final String OTP_URL = "http://kookyapps.com/smv/api/verifyOtp/";
-
-    public static final String KEY_TITLE = "n_title";
+       public static final String KEY_TITLE = "n_title";
     public static final String KEY_DESC = "n_desc";
     public static final String KEY_CAT = "n_cat";
     public static final String KEY_IMG = "n_img";
@@ -163,7 +161,7 @@ public class confirmationFragment extends Fragment {
 
 
     private void send(){
-
+        String url = Utils.BASE_URL+Utils.UPLOAD_NEWS_URL;
         String title = ((Main2Activity) getActivity()).storysaver.getCaption();
         String desc = ((Main2Activity) getActivity()).storysaver.getDesc();
         String cat = ((Main2Activity) getActivity()).storysaver.getCat_id();
@@ -179,7 +177,7 @@ public class confirmationFragment extends Fragment {
         params.put(KEY_IMG,img);
         params.put(KEY_EMAIL,email);
 
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,REGISTER_URL, new JSONObject(params),
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,url, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -209,7 +207,7 @@ public class confirmationFragment extends Fragment {
     }
 
     private void verifyOtp(){
-
+            String url = Utils.BASE_URL+Utils.VERIFY_OTP_URL;
             String email = ((Main2Activity) getActivity()).storysaver.getEmail();
             String otpParam = otp.getText().toString();
 
@@ -220,7 +218,7 @@ public class confirmationFragment extends Fragment {
 
         pd = ProgressDialog.show(getContext(), "", "Verfying Otp", true, false);
 
-            JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, OTP_URL, new JSONObject(params),
+            JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params),
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {

@@ -29,7 +29,8 @@ public class DetailPageAdapter extends PagerAdapter {
     ArrayList<Story> mstory;
     private LayoutInflater inflater;
     Typeface monstRegular,monstBold;
-    Button share,comment;
+    Button comment;
+    ImageView share;
     ProgressBar progressBar;
 
 
@@ -73,7 +74,7 @@ public class DetailPageAdapter extends PagerAdapter {
             targetview.getParent().requestChildFocus(targetview,targetview);
             }
         });
-        share = (Button)v.findViewById(R.id.sharebutton);
+        share = (ImageView) v.findViewById(R.id.sharebutton);
         share.setOnClickListener(new View.OnClickListener() {
 
             @Override

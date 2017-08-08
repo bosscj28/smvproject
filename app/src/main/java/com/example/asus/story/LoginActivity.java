@@ -17,6 +17,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.asus.story.utils.Session;
+import com.example.asus.story.utils.Utils;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -51,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton lb;
     ProgressDialog pd;
     SharedPreferences sharedPreProfile;
-    public static final String REGISTER_URL = "http://kookyapps.com/smv/api/fblogin/";
     public static final String KEY_FB_ID = "fb_id";
     public static final String KEY_FNAME = "fb_name";
     public static final String KEY_LNAME = "fb_lname";
@@ -59,10 +60,12 @@ public class LoginActivity extends AppCompatActivity {
     public static final String KEY_CONTACT = "fb_contact";
     public static final String KEY_EMAIL = "fb_email";
     public static final String KEY_COUNTRY = "fb_country";
+    Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        session = Session.getSession(LoginActivity.this);
         facebook_id=f_name=m_name=l_name=gender=profile_image=contact=email=country="";
         FacebookSdk.sdkInitialize( getApplication());
         AppEventsLogger.activateApp(this);
@@ -183,6 +186,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void RegisterUser(){
 
+        String url = Utils.BASE_URL+Utils.FB_LOGIN_URL;
         pd = ProgressDialog.show(LoginActivity.this, "", "Verifying user", true, false);
 
         HashMap<String, String> params = new HashMap<String, String>();
@@ -202,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d("PARAM DATA 1","USER 6"+email);
         Log.d("PARAM DATA 1","USER 7"+country);
 
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,REGISTER_URL, new JSONObject(params),
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,url, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -226,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
                                 String email = jobj.getString("user_email");
                                 String country = jobj.getString("user_country");
                                 String fb_id = jobj.getString("user_fb_id");
-
+                                /*
                                 SharedPreferences.Editor editor = sharedPreProfile.edit();
                                 editor.putString("Logged_user_img",img);
                                 editor.putString("Logged_user_fb_id",fb_id);
@@ -234,6 +238,13 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString("Logged_user_name",fname+' '+lname);
                                 editor.putString("Logged_user_email",email);
                                 editor.apply();
+                                */
+                                session.setUserName(fname+' '+lname);
+                                session.setUserId(id);
+                                session.setUserEmail(email);
+                                session.setUserImg(img);
+                                session.setUserFbId(fb_id);
+
                             }
                             if(responseFlag == 1 && message.equals("Account create Successfully")) {
                                 //Toast.makeText(LoginActivity.this, "User Registered Successful", Toast.LENGTH_LONG).show();

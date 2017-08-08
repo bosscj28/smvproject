@@ -4,21 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -34,7 +25,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.widget.GridLayout.LayoutParams;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -43,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,9 +45,8 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.example.asus.story.utils.Session;
+import com.example.asus.story.utils.Utils;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
@@ -104,14 +92,15 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog pd;
     ImageView userImgNav;
     TextView userNameNav,userEmailNav;
-    private static final String CATEGORY_URL = "http://kookyapps.com/smv/api/newsType";
-    public static final String PROFILE_URL = " http://kookyapps.com/smv/api/profile/";
     public static final String KEY_FB_ID = "fb_id";
     ArrayList<HashMap<String,String>> categoryList;
     SharedPreferences sharedPreProfile;
+    Session session;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        session = Session.getSession(MainActivity.this);
         overridePendingTransition(R.anim.lefttoright, R.anim.hold);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -172,13 +161,16 @@ public class MainActivity extends AppCompatActivity
         userImgNav = (ImageView) header.findViewById(R.id.userImgNav);
         userNameNav = (TextView) header.findViewById(R.id.userNameNav);
         userEmailNav = (TextView) header.findViewById(R.id.userEmailNav);
-        sharedPreProfile = getSharedPreferences("Logged_in_user",MODE_PRIVATE);
+       /* sharedPreProfile = getSharedPreferences("Logged_in_user",MODE_PRIVATE);
         String Logged_name = sharedPreProfile.getString("Logged_user_name","Internet Failure");
         String Logged_email = sharedPreProfile.getString("Logged_user_email","Internet Failure");
         String Logged_img = sharedPreProfile.getString("Logged_user_img","Internet Failure");
         Log.d("TAG","LOGGED DATA"+Logged_name);
         userNameNav.setText(Logged_name);
-        userEmailNav.setText(Logged_email);
+        userEmailNav.setText(Logged_email);*/
+
+        userEmailNav.setText(session.getUserEmail());
+        userNameNav.setText(session.getUserName());
 
         userImgNav.setImageResource(R.drawable.user);
 
@@ -187,7 +179,7 @@ public class MainActivity extends AppCompatActivity
         if(isOnline(this))
         {
             Glide.with(MainActivity.this)
-                    .load(Logged_img)
+                    .load(session.getUserImg())
                     .into(userImgNav);
             GetCategorys();
 
@@ -206,7 +198,7 @@ public class MainActivity extends AppCompatActivity
                                 sharedPreProfile = getSharedPreferences("Logged_in_user",MODE_PRIVATE);
                                 String Logged_img = sharedPreProfile.getString("Logged_user_img","Internet Failure");
                                 Glide.with(MainActivity.this)
-                                        .load(Logged_img)
+                                        .load(session.getUserImg())
                                         .into(userImgNav);
                                 GetCategorys();
                             }
@@ -402,9 +394,10 @@ public class MainActivity extends AppCompatActivity
 
         }else if(item.getTitle().equals("Logout")){
             LoginManager.getInstance().logOut();
-            SharedPreferences.Editor editor2 = sharedPreProfile.edit();
+            /*SharedPreferences.Editor editor2 = sharedPreProfile.edit();
             editor2.clear();
-            editor2.commit();
+            editor2.commit();*/
+            session.ClearSession(MainActivity.this);
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             MainActivity.this.finish();
         }else {
@@ -423,28 +416,7 @@ public class MainActivity extends AppCompatActivity
 
             }
 
-        }            // Handle navigation view item clicks here.
-       /* int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_logout) {
-            LoginManager.getInstance().logOut();
-            SharedPreferences.Editor editor2 = sharedPreProfile.edit();
-            editor2.clear();
-            editor2.commit();
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            MainActivity.this.finish();
-
-        }*/
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -453,8 +425,9 @@ public class MainActivity extends AppCompatActivity
 
     public void GetCategorys()
     {
+        String url = Utils.BASE_URL+Utils.CATEGORY_URL;
         pd = ProgressDialog.show(this, "", "Please Wait!", true, false);
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,CATEGORY_URL,
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -524,7 +497,7 @@ public class MainActivity extends AppCompatActivity
 
 
     public void popularStories(String id,String upperparam, String lowerparam){
-        String url = "http://kookyapps.com/smv/api/FetchNews/";
+        String url = Utils.BASE_URL+Utils.FETCH_NEWS_URL;
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("cat_id", id);

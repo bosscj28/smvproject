@@ -83,8 +83,7 @@ public SliderAdapter(Context context,ArrayList<Story> story){
             public void onClick(View v) {
                 try {
 
-                    //String s=descText.toString();
-                  //  String t=captionText.getText().toString();
+
                     img.buildDrawingCache();
                     Bitmap bitmap = img.getDrawingCache();
                     ByteArrayOutputStream stream=new ByteArrayOutputStream();
@@ -92,37 +91,23 @@ public SliderAdapter(Context context,ArrayList<Story> story){
                     byte[] image=stream.toByteArray();
                     String img_str = Base64.encodeToString(image, 0);
 
-                       /* Integer currID=id;
-                        //Log.d("ID","CURRENT :::"+currID);
-                        Intent i=new Intent(context1,popup.class);
-                        i.putExtra("CURRENT_ID",currID);
-                        context1.startActivity(i);
-                       */
-                    // POPUP CLASS
-                        /*
-                       Intent i=new Intent(context1,popup.class);
-                        i.putExtra("title",descText);
-                        i.putExtra("caption",t);
-                        //i.putExtra("img",img_str);
-                        Log.d("TAG",url);
-                        i.putExtra("imageUri", url);
-                        context1.startActivity(i);*/
-                 if(position!=9){
-                    Intent i = new Intent(context,DetailActivity.class);
-                    i.putExtra("STORY",mstory);
-                    Log.d("Position","position"+position);
-                    i.putExtra("POSITION",position);
-                     i.putExtra("CATEGORY_NAME","Popular");
-                    context.startActivity(i);}
+
+                    if(position!=9){
+                        Intent i = new Intent(context,DetailActivity.class);
+                        i.putExtra("STORY",mstory);
+                        Log.d("Position","position"+position);
+                        i.putExtra("POSITION",position);
+                        i.putExtra("CATEGORY_NAME","Popular");
+                        context.startActivity(i);
+                    }
 
 
                 } catch (ClassCastException exception) {
-
+                    exception.printStackTrace();
                 }
             }
         });
-     //   TextView desc = (TextView) v.findViewById(R.id.descDetail);
-       // desc.setTypeface(monstRegular);
+
         dataAdapter da=new dataAdapter();
         LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(7*da.getScreenWidth()/10,3*da.getScreenHeight()/10);
         img.setLayoutParams(params);
@@ -136,12 +121,6 @@ public SliderAdapter(Context context,ArrayList<Story> story){
         title.setMaxLines(1);
         LinearLayout.LayoutParams params1=new LinearLayout.LayoutParams(7*da.getScreenWidth()/10,8*da.getScreenHeight()/20);
         SLinear.setLayoutParams(params1);
-        /*if (Build.VERSION.SDK_INT >= 24) {
-            desc.setText(Html.fromHtml(current._desc,1)); // for 24 api and more
-        } else {
-            desc.setText(Html.fromHtml(current._desc)); // for for older api
-        }*/
-
 
         container.addView(v);
         return v;

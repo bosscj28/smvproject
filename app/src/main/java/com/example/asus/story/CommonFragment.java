@@ -26,6 +26,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.example.asus.story.utils.Utils;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
@@ -171,7 +172,7 @@ public class CommonFragment extends Fragment {
     {
         // Tag used to cancel the request
 
-        String url = "http://kookyapps.com/smv/api/FetchNews/";
+        String url = Utils.BASE_URL+Utils.FETCH_NEWS_URL;
 
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("cat_id", id);
